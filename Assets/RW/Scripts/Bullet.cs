@@ -44,6 +44,9 @@ namespace KelvinAndrean.NebulaSiege
         {
             gameObject.SetActive(false);
             Destroy(gameObject);
+
+            GameManager.Instance.CreateExplosion(transform.position);
+
         }
 
         private void Awake()

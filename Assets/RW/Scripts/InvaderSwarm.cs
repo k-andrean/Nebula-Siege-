@@ -142,11 +142,21 @@ namespace KelvinAndrean.NebulaSiege
 
             for (int i = 0; i < columnCount; i++)
             {
-                var bulletSpawner = Instantiate(Resources.Load('Prefabs/BulletSpawner');
-                bulletSpawner.transform.SetParent(swarm.transform);
+                //var bulletSpawner = Instantiate(Resources.Load("Prefabs/BulletSpawner"));
+                //UnityEngine.Debug.Log("test debug", bulletSpawner);
+                //bulletSpawner.transform.SetParent(swarm.transform);
+                //bulletSpawner.column = i;
+                //bulletSpawner.currentRow = rowCount - 1;
+                //bulletSpawner.Setup();
+
+                var bulletSpawnerObject = Instantiate(Resources.Load("Prefabs/BulletSpawner")) as GameObject;
+                var bulletSpawner = bulletSpawnerObject.GetComponent<BulletSpawner>();
+
+                bulletSpawnerObject.transform.SetParent(swarm.transform);
                 bulletSpawner.column = i;
                 bulletSpawner.currentRow = rowCount - 1;
                 bulletSpawner.Setup();
+
             }
 
         }
