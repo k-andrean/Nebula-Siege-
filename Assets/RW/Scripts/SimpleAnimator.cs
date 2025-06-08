@@ -29,7 +29,8 @@
  */
 using UnityEngine;
 
-namespace RayWenderlich.SpaceInvadersUnity
+//namespace RayWenderlich.SpaceInvadersUnity
+namespace KelvinAndrean.NebulaSiege
 {
     [RequireComponent(typeof(SpriteRenderer))]
     public class SimpleAnimator : MonoBehaviour

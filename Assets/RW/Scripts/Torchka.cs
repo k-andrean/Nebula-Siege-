@@ -29,7 +29,8 @@
  */
 using UnityEngine;
 
-namespace RayWenderlich.SpaceInvadersUnity
+//namespace RayWenderlich.SpaceInvadersUnity
+namespace KelvinAndrean.NebulaSiege
 {
     public class Torchka : MonoBehaviour
     {

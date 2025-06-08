@@ -27,12 +27,57 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+using System;
 using UnityEngine;
 
-namespace RayWenderlich.SpaceInvadersUnity
+//namespace RayWenderlich.SpaceInvadersUnity
+namespace KelvinAndrean.NebulaSiege
 {
     public class BulletSpawner : MonoBehaviour
     {
+        internal int currentRow;
+        internal int column;
+
+        [SerializeField]
+        private AudioClip shooting;
+
+        [SerializeField]
+        private GameObject bulletPrefab;
+
+        [SerializeField]
+        private Transform spawnPoint;
+
+        [SerializeField]
+        private float minTime;
+
+        [SerializeField]
+        private float maxTime;
+
+        private float timer;
+        private float currentTime;
+        private Transform followTarget;
+
+        internal void Setup()
+        {
+            currentTime = UnityEngine.Random.Range(minTime, maxTime);
+            followTarget = InvaderSwarm.Instance.GetInvader(currentRow, column);
+        }
+
+        private void Update()
+        {
+            transform.position = followTarget.position;
+
+            timer += Time.deltaTime;
+            if (timer < currentTime)
+            {
+                return;
+            }
+
+            Instantiate(bulletPrefab, spawnPoint.position, Quaternion.identity);
+            GameManager.Instance.PlaySfx(shooting);
+            timer = 0f;
+            currentTime = UnityEngine.Random.Range(minTime, maxTime);
+        }
 
     }
 }
