@@ -42,6 +42,7 @@ namespace KelvinAndrean.NebulaSiege
             public Sprite[] sprites;
             public int points;
             public int rowCount;
+            public bool isSpecialColor;
         }
 
         internal static InvaderSwarm Instance;
@@ -76,6 +77,50 @@ namespace KelvinAndrean.NebulaSiege
         private float currentX;
         private float xIncrement;
 
+        private int killCount;
+        private System.Collections.Generic.Dictionary<string, int> pointsMap;
+
+        [SerializeField]
+        private MusicControl musicControl;
+
+        private int tempKillCount;
+
+        [SerializeField]
+        private Transform cannonPosition;
+
+        private float minY;
+        private float currentY;
+
+        internal void IncreaseDeathCount()
+        {
+            killCount++;
+            if (killCount >= invaders.Length)
+            {
+                GameManager.Instance.TriggerGameOver(false);
+                return;
+            }
+
+            tempKillCount++;
+            if (tempKillCount < invaders.Length / musicControl.pitchChangeSteps)
+            {
+                return;
+            }
+
+            musicControl.IncreasePitch();
+            tempKillCount = 0;
+
+        }
+
+        internal int GetPoints(string alienName)
+        {
+            if (pointsMap.ContainsKey(alienName))
+            {
+                return pointsMap[alienName];
+            }
+            return 0;
+        }
+
+
         internal Transform GetInvader(int row, int column)
         {
             if (row < 0 || column < 0
@@ -104,6 +149,9 @@ namespace KelvinAndrean.NebulaSiege
         {
             minX = spawnStartPoint.position.x;
 
+            currentY = spawnStartPoint.position.y;
+            minY = cannonPosition.position.y;
+
             GameObject swarm = new GameObject { name = "Swarm" };
             Vector2 currentPos = spawnStartPoint.position;
 
@@ -115,11 +163,13 @@ namespace KelvinAndrean.NebulaSiege
             currentX = minX;
             invaders = new Transform[rowCount, columnCount];
 
+            pointsMap = new System.Collections.Generic.Dictionary<string, int>();
 
             int rowIndex = 0;
             foreach (var invaderType in invaderTypes)
             {
                 var invaderName = invaderType.name.Trim();
+                pointsMap[invaderName] = invaderType.points;
                 for (int i = 0, len = invaderType.rowCount; i < len; i++)
                 {
                     for (int j = 0; j < columnCount; j++)
@@ -129,6 +179,12 @@ namespace KelvinAndrean.NebulaSiege
                         invader.transform.position = currentPos;
                         invader.transform.SetParent(swarm.transform);
                         invaders[rowIndex, j] = invader.transform;
+
+                        // Add OtherColorInvader component if this is a special colored invader
+                        if (invaderType.isSpecialColor)
+                        {
+                            invader.AddComponent<OtherColorInvader>();
+                        }
 
                         currentPos.x += xSpacing;
                     }
@@ -142,12 +198,6 @@ namespace KelvinAndrean.NebulaSiege
 
             for (int i = 0; i < columnCount; i++)
             {
-                //var bulletSpawner = Instantiate(Resources.Load("Prefabs/BulletSpawner"));
-                //UnityEngine.Debug.Log("test debug", bulletSpawner);
-                //bulletSpawner.transform.SetParent(swarm.transform);
-                //bulletSpawner.column = i;
-                //bulletSpawner.currentRow = rowCount - 1;
-                //bulletSpawner.Setup();
 
                 var bulletSpawnerObject = Instantiate(Resources.Load("Prefabs/BulletSpawner")) as GameObject;
                 var bulletSpawner = bulletSpawnerObject.GetComponent<BulletSpawner>();
@@ -163,7 +213,7 @@ namespace KelvinAndrean.NebulaSiege
 
         private void Update()
         {
-            xIncrement = speedFactor * Time.deltaTime;
+            xIncrement = speedFactor * musicControl.Tempo * Time.deltaTime;
             if (isMovingRight)
             {
                 currentX += xIncrement;
@@ -205,6 +255,13 @@ namespace KelvinAndrean.NebulaSiege
         {
             isMovingRight = !isMovingRight;
             MoveInvaders(0, -ySpacing);
+
+            currentY -= ySpacing;
+            if (currentY < minY)
+            {
+                GameManager.Instance.TriggerGameOver();
+            }
+
         }
 
 

@@ -34,11 +34,20 @@ namespace KelvinAndrean.NebulaSiege
 {
     public class Bullet : MonoBehaviour
     {
+        public static float DefaultSpeed = 200f;
+
         [SerializeField]
         private float speed = 200f;
 
         [SerializeField]
         private float lifeTime = 5f;
+
+        private CannonControl sourceCannon;
+
+        public void SetSourceCannon(CannonControl cannon)
+        {
+            sourceCannon = cannon;
+        }
 
         internal void DestroySelf()
         {
@@ -61,6 +70,14 @@ namespace KelvinAndrean.NebulaSiege
 
         private void OnCollisionEnter2D(Collision2D other)
         {
+            // Check if we hit a special colored invader
+            var otherColorInvader = other.gameObject.GetComponent<OtherColorInvader>();
+            if (otherColorInvader != null && sourceCannon != null)
+            {
+                // Apply power-up to the cannon that fired this bullet
+                sourceCannon.ApplyPowerUp();
+            }
+            
             DestroySelf();
         }
 

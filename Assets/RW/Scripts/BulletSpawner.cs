@@ -79,5 +79,42 @@ namespace KelvinAndrean.NebulaSiege
             currentTime = UnityEngine.Random.Range(minTime, maxTime);
         }
 
+        private void OnCollisionEnter2D(Collision2D other)
+        {
+            if (!other.collider.GetComponent<Bullet>())
+            {
+                return;
+            }
+
+            // Check if the invader is a special colored one
+            var otherColorInvader = followTarget.GetComponent<OtherColorInvader>();
+            if (otherColorInvader != null)
+            {
+                // Find the cannon and apply power-up
+                var cannon = FindObjectOfType<CannonControl>();
+                if (cannon != null)
+                {
+                    cannon.ApplyPowerUp();
+                }
+            }
+
+            GameManager.Instance.
+                UpdateScore(InvaderSwarm.Instance.GetPoints(followTarget.gameObject.name));
+
+            InvaderSwarm.Instance.IncreaseDeathCount();
+
+            followTarget.GetComponentInChildren<SpriteRenderer>().enabled = false;
+            currentRow = currentRow - 1;
+            if (currentRow < 0)
+            {
+                gameObject.SetActive(false);
+            }
+            else
+            {
+                Setup();
+            }
+        }
+
+
     }
 }

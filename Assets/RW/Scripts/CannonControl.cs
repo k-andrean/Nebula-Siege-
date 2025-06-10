@@ -29,6 +29,7 @@
  */
 using System.Runtime.Versioning;
 using UnityEngine;
+using System.Collections;
 
 //namespace RayWenderlich.SpaceInvadersUnity
 namespace KelvinAndrean.NebulaSiege
@@ -47,10 +48,38 @@ namespace KelvinAndrean.NebulaSiege
         [SerializeField]
         private float coolDownTime = 0.5f;
 
-        //[SerializeField]
-        //private Bullet bulletPrefab;
+        public float CoolDownTime
+        {
+            get => coolDownTime;
+            set => coolDownTime = value;
+        }
+
+        [Header("Power-up Settings")]
+        [SerializeField] private float powerUpDuration = 30f;
+        [SerializeField] private float bulletSpeedMultiplier = 3f;
+        [SerializeField] private float cooldownMultiplier = 0.2f;
 
         private float shootTimer;
+        private float originalCoolDownTime;
+        private float originalBulletSpeed;
+
+        [SerializeField]
+        private float respawnTime = 2f;
+
+        [SerializeField]
+        private SpriteRenderer sprite;
+
+        [SerializeField]
+        private Collider2D cannonCollider;
+
+        private Vector2 startPos;
+
+        private void Start()
+        {
+            startPos = transform.position;
+            originalCoolDownTime = coolDownTime;
+            originalBulletSpeed = Bullet.DefaultSpeed;
+        }
 
         private void Update()
         {
@@ -68,11 +97,76 @@ namespace KelvinAndrean.NebulaSiege
             {
                 shootTimer = 0f;
 
-                Instantiate(Resources.Load("Prefabs/Bullet"), muzzle.position, Quaternion.identity);
+                var bulletObj = Instantiate(Resources.Load("Prefabs/Bullet"), muzzle.position, Quaternion.identity) as GameObject;
+                var bullet = bulletObj.GetComponent<Bullet>();
+                if (bullet != null)
+                {
+                    bullet.SetSourceCannon(this);
+                }
                 GameManager.Instance.PlaySfx(shooting);
             }
-
         }
 
+        public void ApplyPowerUp()
+        {
+            StartCoroutine(PowerUpRoutine());
+        }
+
+        private IEnumerator PowerUpRoutine()
+        {
+            // Apply power-ups
+            coolDownTime = originalCoolDownTime * cooldownMultiplier;
+            Bullet.DefaultSpeed = originalBulletSpeed * bulletSpeedMultiplier;
+
+            // Wait for duration
+            yield return new WaitForSeconds(powerUpDuration);
+
+            // Revert changes
+            coolDownTime = originalCoolDownTime;
+            Bullet.DefaultSpeed = originalBulletSpeed;
+        }
+
+        private void ResetPowerUp()
+        {
+            // Stop any ongoing power-up coroutines
+            StopAllCoroutines();
+            
+            // Reset to original values
+            coolDownTime = originalCoolDownTime;
+            Bullet.DefaultSpeed = originalBulletSpeed;
+        }
+
+        private void OnCollisionEnter2D(Collision2D other)
+        {
+            GameManager.Instance.UpdateLives();
+            ResetPowerUp(); // Reset power-ups before respawning
+            StopAllCoroutines();
+            StartCoroutine(Respawn());
+        }
+
+        System.Collections.IEnumerator Respawn()
+        {
+            enabled = false;
+            cannonCollider.enabled = false;
+            ChangeSpriteAlpha(0.0f);
+
+            yield return new WaitForSeconds(0.25f * respawnTime);
+
+            transform.position = startPos;
+            enabled = true;
+            ChangeSpriteAlpha(0.25f);
+
+            yield return new WaitForSeconds(0.75f * respawnTime);
+
+            ChangeSpriteAlpha(1.0f);
+            cannonCollider.enabled = true;
+        }
+
+        private void ChangeSpriteAlpha(float value)
+        {
+            var color = sprite.color;
+            color.a = value;
+            sprite.color = color;
+        }
     }
 }

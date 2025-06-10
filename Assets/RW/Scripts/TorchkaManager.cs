@@ -27,6 +27,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+using System.Runtime.Versioning;
 using UnityEngine;
 
 //namespace RayWenderlich.SpaceInvadersUnity
@@ -77,7 +78,11 @@ namespace KelvinAndrean.NebulaSiege
                 (Vector2)spawnMidPoint.position + spacing * startShift * Vector2.left;
             for (int i = 0; i < totalCount; i++)
             {
-                var torchka = Instantiate(torchkaPrefab, currentPos, Quaternion.identity);
+                var torchkaObj = Instantiate(Resources.Load("Prefabs/Torchka"), currentPos, Quaternion.identity) as GameObject;
+
+                // Get the Torchka component from the instantiated object
+                var torchka = torchkaObj.GetComponent<Torchka>();
+
                 torchka.manager = this;
                 currentPos += spacing * Vector2.right;
             }
