@@ -65,6 +65,8 @@ namespace KelvinAndrean.NebulaSiege
             {
                 return;
             }
+            // UnityEngine.Debug.Log($"GameSettings.Instance.GetTorchkaCount() {GameSettings.Instance.GetTorchkaCount()}");
+            totalCount = GameSettings.Instance.GetTorchkaCount();
 
             damagePixelArray = damageTexture.GetPixels();
 

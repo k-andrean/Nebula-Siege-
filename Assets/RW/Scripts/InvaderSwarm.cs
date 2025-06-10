@@ -146,6 +146,18 @@ namespace KelvinAndrean.NebulaSiege
             {
                 Destroy(gameObject);
             }
+
+            if (GameSettings.Instance != null)
+            {
+                int totalRows = GameSettings.Instance.GetRowCount();
+
+                // Distribute rows among invader types
+                for (int i = 0; i < invaderTypes.Length; i++)
+                {
+                    // Add extra row to first invader type if there are remaining rows
+                    invaderTypes[i].rowCount = totalRows;
+                }
+            }
         }
 
 

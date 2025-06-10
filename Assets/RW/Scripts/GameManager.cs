@@ -149,6 +149,8 @@ namespace KelvinAndrean.NebulaSiege
                 Destroy(gameObject);
             }
 
+            ApplyGameSettings();
+
             lives = maxLives;
             livesLabel.text = $"Lives: {lives}";
 
@@ -166,6 +168,23 @@ namespace KelvinAndrean.NebulaSiege
             restartButton.gameObject.SetActive(false);
 
 
+        }
+
+      
+        private void ApplyGameSettings()
+        {
+            if (GameSettings.Instance == null) return;
+
+            // Apply difficulty multiplier to game parameters
+            float difficultyMultiplier = GameSettings.Instance.GetDifficultyMultiplier();
+            int levelNumber = GameSettings.Instance.GetLevelNumber();
+
+            // Adjust game parameters based on difficulty and level
+            // For example:
+            // - Increase invader speed based on difficulty
+            // - Increase number of invaders based on level
+            // - Adjust power-up duration based on difficulty
+            // - etc.
         }
 
     }
