@@ -1142,7 +1142,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: af802873a0190974ea0d1b6a746cf0c4, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.5682962, g: 1, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1750,6 +1750,10 @@ MonoBehaviour:
   bulletSpeedMultiplier: 1.5
   cooldownMultiplier: 0.5
   moveSpeedMultiplier: 1.2
+  powerUpText: {fileID: 0}
+  bulletSpeedColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  invincibilityColor: {r: 1, g: 0, b: 0, a: 1}
+  moveSpeedColor: {r: 0, g: 1, b: 0, a: 1}
   respawnTime: 2
   sprite: {fileID: 666176963}
   cannonCollider: {fileID: 1472441961}
