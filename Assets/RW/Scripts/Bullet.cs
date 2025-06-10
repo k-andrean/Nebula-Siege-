@@ -75,7 +75,7 @@ namespace KelvinAndrean.NebulaSiege
             if (otherColorInvader != null && sourceCannon != null)
             {
                 // Apply power-up to the cannon that fired this bullet
-                sourceCannon.ApplyPowerUp();
+                sourceCannon.ApplyPowerUp(otherColorInvader.powerUpType);
             }
             
             DestroySelf();

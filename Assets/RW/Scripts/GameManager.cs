@@ -69,6 +69,9 @@ namespace KelvinAndrean.NebulaSiege
         private UnityEngine.UI.Text scoreLabel;
 
         [SerializeField]
+        private UnityEngine.UI.Text powerUpLabel;
+
+        [SerializeField]
         private GameObject gameOver;
 
         [SerializeField]
@@ -83,6 +86,18 @@ namespace KelvinAndrean.NebulaSiege
         {
             score += value;
             scoreLabel.text = $"Score: {score}";
+        }
+
+        internal void UpdatePowerUp(string text, Color? color = null)
+        {
+            if (powerUpLabel != null)
+            {
+                powerUpLabel.text = text;
+                if (color.HasValue)
+                {
+                    powerUpLabel.color = color.Value;
+                }
+            }
         }
 
         internal void TriggerGameOver(bool failure = true)
@@ -139,6 +154,7 @@ namespace KelvinAndrean.NebulaSiege
 
             score = 0;
             scoreLabel.text = $"Score: {score}";
+            powerUpLabel.text = $"";
             gameOver.gameObject.SetActive(false);
             allClear.gameObject.SetActive(false);
 

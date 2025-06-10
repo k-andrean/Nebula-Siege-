@@ -91,6 +91,10 @@ namespace KelvinAndrean.NebulaSiege
         private float minY;
         private float currentY;
 
+        [Header("Special Invader Settings")]
+        [SerializeField] private float specialInvaderChance = 0.2f; // 20% chance for each invader to be special
+        [SerializeField] private Color specialInvaderColor = Color.yellow;
+
         internal void IncreaseDeathCount()
         {
             killCount++;
@@ -180,10 +184,12 @@ namespace KelvinAndrean.NebulaSiege
                         invader.transform.SetParent(swarm.transform);
                         invaders[rowIndex, j] = invader.transform;
 
-                        // Add OtherColorInvader component if this is a special colored invader
-                        if (invaderType.isSpecialColor)
+                        // Randomly decide if this invader should be special
+                        if (Random.value < specialInvaderChance)
                         {
-                            invader.AddComponent<OtherColorInvader>();
+                            var otherColorInvader = invader.AddComponent<OtherColorInvader>();
+                            // Randomly assign a power-up type
+                            otherColorInvader.powerUpType = (OtherColorInvader.PowerUpType)Random.Range(0, 3);
                         }
 
                         currentPos.x += xSpacing;

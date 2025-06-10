@@ -94,7 +94,7 @@ namespace KelvinAndrean.NebulaSiege
                 var cannon = FindObjectOfType<CannonControl>();
                 if (cannon != null)
                 {
-                    cannon.ApplyPowerUp();
+                    cannon.ApplyPowerUp(otherColorInvader.powerUpType);
                 }
             }
 

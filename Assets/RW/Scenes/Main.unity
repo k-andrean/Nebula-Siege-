@@ -200,6 +200,8 @@ MonoBehaviour:
   speedFactor: 10
   musicControl: {fileID: 830995718}
   cannonPosition: {fileID: 1472441959}
+  specialInvaderChance: 0.2
+  specialInvaderColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!114 &16625293
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -237,6 +239,7 @@ MonoBehaviour:
   livesLabel: {fileID: 1072051831}
   music: {fileID: 830995718}
   scoreLabel: {fileID: 1030000417}
+  powerUpLabel: {fileID: 2049747902}
   gameOver: {fileID: 500558181}
   allClear: {fileID: 304893960}
   restartButton: {fileID: 400145464}
@@ -1746,6 +1749,7 @@ MonoBehaviour:
   powerUpDuration: 10
   bulletSpeedMultiplier: 1.5
   cooldownMultiplier: 0.5
+  moveSpeedMultiplier: 1.2
   respawnTime: 2
   sprite: {fileID: 666176963}
   cannonCollider: {fileID: 1472441961}

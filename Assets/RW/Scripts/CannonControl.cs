@@ -30,6 +30,8 @@
 using System.Runtime.Versioning;
 using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
+using TMPro;
 
 //namespace RayWenderlich.SpaceInvadersUnity
 namespace KelvinAndrean.NebulaSiege
@@ -58,10 +60,18 @@ namespace KelvinAndrean.NebulaSiege
         [SerializeField] private float powerUpDuration = 30f;
         [SerializeField] private float bulletSpeedMultiplier = 3f;
         [SerializeField] private float cooldownMultiplier = 0.2f;
+        [SerializeField] private float moveSpeedMultiplier = 1.2f;
+
+        [Header("Power-up UI")]
+        [SerializeField] private TextMeshProUGUI powerUpText;
+        [SerializeField] private Color bulletSpeedColor = Color.yellow;
+        [SerializeField] private Color invincibilityColor = Color.red;
+        [SerializeField] private Color moveSpeedColor = Color.green;
 
         private float shootTimer;
         private float originalCoolDownTime;
         private float originalBulletSpeed;
+        private float originalSpeed;
 
         [SerializeField]
         private float respawnTime = 2f;
@@ -74,11 +84,15 @@ namespace KelvinAndrean.NebulaSiege
 
         private Vector2 startPos;
 
+        private Coroutine currentPowerUpCoroutine;
+        private OtherColorInvader.PowerUpType? currentPowerUpType;
+
         private void Start()
         {
             startPos = transform.position;
             originalCoolDownTime = coolDownTime;
             originalBulletSpeed = Bullet.DefaultSpeed;
+            originalSpeed = speed;
         }
 
         private void Update()
@@ -107,12 +121,68 @@ namespace KelvinAndrean.NebulaSiege
             }
         }
 
-        public void ApplyPowerUp()
+        // private void UpdatePowerUpText(string text, Color? color = null)
+        // {
+        //     if (powerUpText != null)
+        //     {
+        //         powerUpText.text = text;
+        //         if (color.HasValue)
+        //         {
+        //             powerUpText.color = color.Value;
+        //         }
+        //     }
+        // }
+
+        public void ApplyPowerUp(OtherColorInvader.PowerUpType powerUpType)
         {
-            StartCoroutine(PowerUpRoutine());
+            // If there's an active power-up, stop it first
+            if (currentPowerUpCoroutine != null)
+            {
+                StopCoroutine(currentPowerUpCoroutine);
+                RevertCurrentPowerUp();
+            }
+
+            currentPowerUpType = powerUpType;
+            switch (powerUpType)
+            {
+                case OtherColorInvader.PowerUpType.BulletSpeed:
+                    currentPowerUpCoroutine = StartCoroutine(ApplyBulletSpeedPowerUp());
+                    GameManager.Instance.UpdatePowerUp("Bullet Speed", bulletSpeedColor);
+                    break;
+                case OtherColorInvader.PowerUpType.Invincibility:
+                    currentPowerUpCoroutine = StartCoroutine(ApplyInvincibilityPowerUp());
+                    GameManager.Instance.UpdatePowerUp("Invincibility", invincibilityColor);
+                    break;
+                case OtherColorInvader.PowerUpType.MoveSpeed:
+                    currentPowerUpCoroutine = StartCoroutine(ApplyMoveSpeedPowerUp());
+                    GameManager.Instance.UpdatePowerUp("Speed Boost", moveSpeedColor);
+                    break;
+            }
         }
 
-        private IEnumerator PowerUpRoutine()
+        private void RevertCurrentPowerUp()
+        {
+            if (!currentPowerUpType.HasValue) return;
+
+            switch (currentPowerUpType.Value)
+            {
+                case OtherColorInvader.PowerUpType.BulletSpeed:
+                    coolDownTime = originalCoolDownTime;
+                    Bullet.DefaultSpeed = originalBulletSpeed;
+                    break;
+                case OtherColorInvader.PowerUpType.Invincibility:
+                    cannonCollider.enabled = true;
+                    ChangeSpriteAlpha(1.0f);
+                    break;
+                case OtherColorInvader.PowerUpType.MoveSpeed:
+                    speed = originalSpeed;
+                    break;
+            }
+            currentPowerUpType = null;
+            GameManager.Instance.UpdatePowerUp("", null);
+        }
+
+        private IEnumerator ApplyBulletSpeedPowerUp()
         {
             // Apply power-ups
             coolDownTime = originalCoolDownTime * cooldownMultiplier;
@@ -122,18 +192,52 @@ namespace KelvinAndrean.NebulaSiege
             yield return new WaitForSeconds(powerUpDuration);
 
             // Revert changes
-            coolDownTime = originalCoolDownTime;
-            Bullet.DefaultSpeed = originalBulletSpeed;
+            RevertCurrentPowerUp();
+            currentPowerUpCoroutine = null;
+        }
+
+        private IEnumerator ApplyInvincibilityPowerUp()
+        {
+            // Store original state
+            bool originalColliderState = cannonCollider.enabled;
+            float originalAlpha = sprite.color.a;
+
+            // Apply power-up
+            cannonCollider.enabled = false;
+            ChangeSpriteAlpha(0.5f);
+
+            // Wait for duration
+            yield return new WaitForSeconds(powerUpDuration);
+
+            // Revert changes
+            RevertCurrentPowerUp();
+            currentPowerUpCoroutine = null;
+        }
+
+        private IEnumerator ApplyMoveSpeedPowerUp()
+        {
+            // Apply power-up
+            speed = originalSpeed * moveSpeedMultiplier;
+
+            // Wait for duration
+            yield return new WaitForSeconds(powerUpDuration);
+
+            // Revert changes
+            RevertCurrentPowerUp();
+            currentPowerUpCoroutine = null;
         }
 
         private void ResetPowerUp()
         {
             // Stop any ongoing power-up coroutines
-            StopAllCoroutines();
+            if (currentPowerUpCoroutine != null)
+            {
+                StopCoroutine(currentPowerUpCoroutine);
+                currentPowerUpCoroutine = null;
+            }
             
             // Reset to original values
-            coolDownTime = originalCoolDownTime;
-            Bullet.DefaultSpeed = originalBulletSpeed;
+            RevertCurrentPowerUp();
         }
 
         private void OnCollisionEnter2D(Collision2D other)
