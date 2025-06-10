@@ -1182,7 +1182,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9db670880bd6e447bfec448796c1447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  backgroundSprite: {fileID: 21300000, guid: 95a1d78d82388f8468246728e08298cc, type: 3}
+  nebula1: {fileID: 21300000, guid: 95a1d78d82388f8468246728e08298cc, type: 3}
+  nebula2: {fileID: 21300000, guid: b6d987c70f5dc4841a88d6bed2e7adda, type: 3}
+  nebula3: {fileID: 21300000, guid: 6f920e7fc0e29424c8d3e4717e9a32d2, type: 3}
 --- !u!212 &707837801
 SpriteRenderer:
   m_ObjectHideFlags: 0

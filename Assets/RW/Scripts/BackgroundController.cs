@@ -4,9 +4,12 @@ namespace KelvinAndrean.NebulaSiege
 {
     public class BackgroundController : MonoBehaviour
     {
-        [SerializeField] private Sprite backgroundSprite;
+        [SerializeField] private Sprite nebula1;
+        [SerializeField] private Sprite nebula2;
+        [SerializeField] private Sprite nebula3;
         private SpriteRenderer spriteRenderer;
         private Camera mainCamera;
+
 
         private void Awake()
         {
@@ -16,10 +19,28 @@ namespace KelvinAndrean.NebulaSiege
 
         private void Start()
         {
-            if (backgroundSprite != null)
+            // Randomly select one of the nebula backgrounds
+            Sprite selectedBackground = GetRandomBackground();
+            if (selectedBackground != null)
             {
-                spriteRenderer.sprite = backgroundSprite;
+                spriteRenderer.sprite = selectedBackground;
                 ScaleBackground();
+            }
+        }
+
+        private Sprite GetRandomBackground()
+        {
+            int randomIndex = Random.Range(0, 3);
+            switch (randomIndex)
+            {
+                case 0:
+                    return nebula1;
+                case 1:
+                    return nebula2;
+                case 2:
+                    return nebula3;
+                default:
+                    return nebula1;
             }
         }
 
