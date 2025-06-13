@@ -151,10 +151,8 @@ namespace KelvinAndrean.NebulaSiege
             {
                 int totalRows = GameSettings.Instance.GetRowCount();
 
-                // Distribute rows among invader types
                 for (int i = 0; i < invaderTypes.Length; i++)
                 {
-                    // Add extra row to first invader type if there are remaining rows
                     invaderTypes[i].rowCount = totalRows;
                 }
             }
@@ -196,13 +194,31 @@ namespace KelvinAndrean.NebulaSiege
                         invader.transform.SetParent(swarm.transform);
                         invaders[rowIndex, j] = invader.transform;
 
-                        // Randomly decide if this invader should be special
                         if (Random.value < specialInvaderChance)
                         {
                             var otherColorInvader = invader.AddComponent<OtherColorInvader>();
-                            // Randomly assign a power-up type
-                            otherColorInvader.powerUpType = (OtherColorInvader.PowerUpType)Random.Range(0, 3);
+                            // otherColorInvader.powerUpType = (OtherColorInvader.PowerUpType)Random.Range(0, 3);
+                            if (rowIndex == 0)
+                            {
+                                otherColorInvader.powerUpType = OtherColorInvader.PowerUpType.MoveSpeed;
+                            }
+                            else
+                            {
+                                otherColorInvader.powerUpType = (OtherColorInvader.PowerUpType)Random.Range(0, 2);
+                            }
                         }
+                        //  if (i == 0)
+                        // {
+                        //     var otherColorInvader = invader.AddComponent<OtherColorInvader>();
+                        //     otherColorInvader.powerUpType = OtherColorInvader.PowerUpType.Invincibility;
+                        // }
+                        // // For other rows, use the random chance
+                        // else if (Random.value < specialInvaderChance)
+                        // {
+                        //     var otherColorInvader = invader.AddComponent<OtherColorInvader>();
+                        //     otherColorInvader.powerUpType = (OtherColorInvader.PowerUpType)Random.Range(0, 3);
+                        // }
+
 
                         currentPos.x += xSpacing;
                     }
